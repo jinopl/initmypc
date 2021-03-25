@@ -1,0 +1,41 @@
+name: CI
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        distro:
+          - ubuntu-latest
+          - ubuntu1804
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
+      
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: pip3 install ansible yamllint ansible-lint
+      
+      - name: Lint code.
+        run: |
+          yamllint .
+          ansible-lint
+          
+      - name: Test the playbooks syntax.
+        run: ansible-playbook init.yml --syntax-check
+        
+      - name: Test the playbook.
+        run: ansible-playbook init.yml -i inventory
+        env:
+          ANSIBLE_FORCE_COLOR: '1'
+        
+        
