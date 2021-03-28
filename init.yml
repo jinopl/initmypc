@@ -1,9 +1,9 @@
+---
 - name: Setup my pc
   hosts: all
   become: yes
 
   tasks:
-    
     - name: fail when system is not debian based
       fail:
         msg: "Sorry system is not debian based"

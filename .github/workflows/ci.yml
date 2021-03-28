@@ -28,7 +28,7 @@ jobs:
       - name: Lint code.
         run: |
           yamllint .
-          ansible-lint
+          ansible-lint .
           
       - name: Test the playbooks syntax.
         run: ansible-playbook init.yml --syntax-check
