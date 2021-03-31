@@ -152,4 +152,5 @@
         src: "/home/{{ ansible_user }}/.dot/vimrc"
         dest: "/home/{{ ansible_user }}/.vimrc"
         state: link
+      become: no
       tags: dot
