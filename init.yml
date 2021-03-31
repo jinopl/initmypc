@@ -153,6 +153,3 @@
         dest: "/home/{{ ansible_user }}/.vimrc"
         state: link
       tags: dot
-
-
-
