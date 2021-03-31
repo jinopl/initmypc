@@ -36,3 +36,106 @@
           - git
           - cowsay
         state: present
+
+    - name: Install GPG keys for softwares
+      apt_key:
+        url: "{{ item }}"
+        state: present
+      with_items:
+        - https://download.sublimetext.com/sublimehq-pub.gpg
+        - https://download.docker.com/linux/ubuntu/gpg
+      tags: apps
+
+    - name: Adding repositories to system
+      apt_repository:
+        repo: deb https://download.sublimetext.com/ apt/stable/
+        filename: sublime
+        state: present
+      tags: apps
+
+    - name: install sublime
+      apt:
+        name: sublime-text
+        state: present
+        update_cache: yes
+      tags: apps
+
+    - name: install virtualbox
+      apt:
+        name: virtualbox
+        state: present
+      tags: apps
+
+    - name: checking os Dist os_family
+      shell: "grep UBUNTU_CODENAME /etc/os-release | awk -F '=' '{ print $2 }'"
+      register: os_dist
+      tags: apps
+
+
+    - name: Adding docker repositories
+      apt_repository:
+       filename: "docker"
+       repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ os_dist.stdout }} stable"
+       state: "present"
+       update_cache: "yes"
+      tags: apps
+
+    - name: install docker
+      apt:
+        name:
+          - docker-ce
+          - docker-compose
+        state: present
+        update_cache: yes
+      tags: apps
+
+    - name: Install latest vagrant from internet
+      apt:
+        deb: https://releases.hashicorp.com/vagrant/2.2.6/vagrant_2.2.6_x86_64.deb
+      tags: apps
+
+    - name: create temp directory for xdm
+      file:
+        path: /tmp/xdm
+        state: directory
+      tags: apps
+
+    - name: Downloading xdm package
+      unarchive:
+        src: "https://github.com/subhra74/xdm/releases/download/7.2.11/xdm-setup-7.2.11.tar.xz"
+        dest: "/tmp/xdm"
+        remote_src: yes
+      register: download_status_xdm
+      tags: apps
+
+
+    - name: install xdm using provided script
+      command: sh /tmp/xdm/install.sh
+      when: download_status_xdm.changed
+      tags: apps
+
+    - name: Install ZSH as shell
+      apt:
+        name: zsh
+        state: present
+      tags: apps
+
+    - name: check ohmyzsh installed
+      stat:
+        path: .oh-my-zsh
+      register: ohmyzsh
+      become: no
+      tags: apps
+
+    - name: Download OhMyZsh installer
+      get_url:
+       dest: "/tmp/zsh-installer.sh"
+       url: "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+      when: not ohmyzsh.stat.exists
+      tags: apps
+
+    - name: Setup om zsh for ZSH
+      command: sh /tmp/zsh-installer.sh --unattended
+      become: no
+      when: not ohmyzsh.stat.exists
+      tags: apps
