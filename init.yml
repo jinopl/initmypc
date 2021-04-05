@@ -139,3 +139,18 @@
       become: no
       when: not ohmyzsh.stat.exists
       tags: apps
+
+    - name: checkout dot repository
+      git:
+        repo: https://github.com/jinopl/dot.git
+        dest: ~/.dot
+      become: no
+      tags: dot
+
+    - name: linking my dot files
+      file:
+        src: "~/.dot/vimrc"
+        dest: "~/.vimrc"
+        state: link
+      become: no
+      tags: dot
