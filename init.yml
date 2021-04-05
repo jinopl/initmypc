@@ -149,8 +149,8 @@
 
     - name: linking my dot files
       file:
-        src: "/home/{{ ansible_user }}/.dot/vimrc"
-        dest: "/home/{{ ansible_user }}/.vimrc"
+        src: "~/.dot/vimrc"
+        dest: "~/.vimrc"
         state: link
       become: no
       tags: dot
