@@ -23,6 +23,7 @@
       apt:
         name: "*"
         state: latest
+      tags: upgrade
 
     - name: install essential packages
       apt:
